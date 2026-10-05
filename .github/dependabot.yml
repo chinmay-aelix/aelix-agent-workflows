@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # Keep CI actions current. n8n itself is pinned on purpose (the workflows are
+  # validated against one exact version), so npm is upgraded by hand.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

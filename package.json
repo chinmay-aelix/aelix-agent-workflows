@@ -1,13 +1,22 @@
 {
   "name": "aelix-agent-workflows",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "n8n workflows for the seven industry agents on aelixecho.com/ai-agents",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinmay-aelix/aelix-agent-workflows.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:check": "node scripts/build.mjs --check",
+    "test": "node test/guardrails.test.mjs",
     "validate": "node scripts/validate.mjs",
-    "test": "node scripts/test-guardrails.mjs",
-    "check": "node scripts/build.mjs && node scripts/test-guardrails.mjs && node scripts/validate.mjs"
+    "check": "npm run build:check && npm test && npm run validate"
   },
   "devDependencies": {
     "n8n": "2.40.7"

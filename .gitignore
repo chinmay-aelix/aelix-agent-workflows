@@ -1,4 +1,16 @@
+# OS and editor
 .DS_Store
+.idea/
+.vscode/
+
+# Dependencies
 node_modules/
+
+# Secrets: credentials live in n8n, never in this repo
 .env
 .env.*
+*.pem
+*.key
+
+# Logs
+npm-debug.log*
