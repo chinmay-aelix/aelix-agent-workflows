@@ -1,0 +1,9 @@
+{
+  "invoice_id": "SI-5100048812",
+  "invoice_number": "INV-77120",
+  "vendor_id": "V-20417",
+  "po_number": "4500092231",
+  "amount": 10150.00,
+  "currency": "USD",
+  "exception_code": "PRICE_VARIANCE"
+}

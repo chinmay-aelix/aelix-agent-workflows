@@ -1,0 +1,10 @@
+{
+  "event_id": "evt-88213",
+  "shipment_id": "SHP-310552",
+  "carrier": "Ridgeline Freight",
+  "tracking_number": "RF4471900213",
+  "event_code": "DELAYED",
+  "event_description": "Trailer held at Amarillo terminal due to road closure on I-40. Estimated delay 36 hours.",
+  "event_time": "2026-09-28T14:05:00Z",
+  "location": "Amarillo, TX"
+}

@@ -1,0 +1,8 @@
+{
+  "request_id": "RR-20260928-0142",
+  "order_number": "ATX-44102",
+  "customer_email": "jordan.lee@example.com",
+  "reason": "The jacket arrived in the wrong size and the exchange is out of stock. I'd like a refund please.",
+  "currency": "usd",
+  "channel": "zendesk"
+}

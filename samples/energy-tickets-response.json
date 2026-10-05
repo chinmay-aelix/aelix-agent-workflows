@@ -1,0 +1,26 @@
+{
+  "tickets": [
+    {
+      "ticket_id": "OT-7730151",
+      "premise_id": "PR-0091842",
+      "meter_id": "MTR-55120983",
+      "address": "418 Juniper Ave, Springfield",
+      "lat": 39.7817,
+      "lon": -89.6501,
+      "reported_at": "2026-09-28T19:12:00Z",
+      "channel": "ivr",
+      "description": "Power went out about 20 minutes ago. Street lights are out too."
+    },
+    {
+      "ticket_id": "OT-7730158",
+      "premise_id": "PR-0104377",
+      "meter_id": "MTR-55133702",
+      "address": "22 Birch Ct, Springfield",
+      "lat": 39.7902,
+      "lon": -89.6433,
+      "reported_at": "2026-09-28T19:15:00Z",
+      "channel": "mobile_app",
+      "description": "Tree branch came down in the storm, wires down in the back yard and sparking."
+    }
+  ]
+}

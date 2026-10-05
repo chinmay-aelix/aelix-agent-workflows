@@ -1,0 +1,14 @@
+{
+  "vendor_application_id": "VA-2026-1187",
+  "legal_name": "Brightline Electric LLC",
+  "trade": "electrical",
+  "state": "TX",
+  "license_number": "TECL-31877",
+  "contact": { "name": "Marcus Hale", "email": "office@brightline-electric.example" },
+  "project_id": "PRJ-ELM-STREET-TOWER",
+  "documents": [
+    { "type": "w9", "url": "https://vendors.yourcompany.example/uploads/VA-2026-1187/w9.pdf" },
+    { "type": "coi", "url": "https://vendors.yourcompany.example/uploads/VA-2026-1187/coi.pdf" },
+    { "type": "license", "url": "https://vendors.yourcompany.example/uploads/VA-2026-1187/license.pdf" }
+  ]
+}

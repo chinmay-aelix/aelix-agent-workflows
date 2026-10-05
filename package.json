@@ -1,0 +1,15 @@
+{
+  "name": "aelix-agent-workflows",
+  "private": true,
+  "type": "module",
+  "description": "n8n workflows for the seven industry agents on aelixecho.com/ai-agents",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test": "node scripts/test-guardrails.mjs",
+    "check": "node scripts/build.mjs && node scripts/test-guardrails.mjs && node scripts/validate.mjs"
+  },
+  "devDependencies": {
+    "n8n": "2.40.7"
+  }
+}

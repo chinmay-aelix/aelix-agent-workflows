@@ -1,0 +1,17 @@
+{
+  "request_id": "PA-2026-00871",
+  "patient_id": "pat-4410",
+  "coverage_id": "cov-4410-1",
+  "ordering_provider": { "npi": "1234567893", "name": "Dr. A. Rivera", "email": "ortho-office@example.org" },
+  "service": {
+    "cpt_codes": ["73721"],
+    "icd10_codes": ["M23.221"],
+    "description": "MRI right knee without contrast",
+    "requested_date": "2026-10-06"
+  },
+  "urgency": "standard",
+  "documents": [
+    { "type": "order", "url": "https://docs.example.org/pa/PA-2026-00871/order.pdf" },
+    { "type": "clinical_note", "url": "https://docs.example.org/pa/PA-2026-00871/visit-2026-09-20.pdf" }
+  ]
+}

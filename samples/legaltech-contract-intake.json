@@ -1,0 +1,8 @@
+{
+  "intake_id": "CI-2026-0419",
+  "submitted_by": { "name": "Priya Nair", "email": "priya.nair@yourcompany.example", "department": "Partnerships" },
+  "counterparty": "Northwind Traders",
+  "document_url": "https://files.yourcompany.example/intake/CI-2026-0419/northwind-mutual-nda.pdf",
+  "business_context": "Exploring a co-marketing pilot. They sent their mutual NDA and want it back this week.",
+  "needed_by": "2026-10-02"
+}
