@@ -1,6 +1,6 @@
 // Runs the deterministic Code nodes (guardrails, verification, safety screen, hand-off)
 // from the built workflow JSON against fixed scenarios. No n8n, no model, no network.
-// Usage: node scripts/test-guardrails.mjs
+// Usage: node test/guardrails.test.mjs
 
 import fs from 'node:fs';
 import path from 'node:path';

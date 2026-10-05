@@ -1,84 +1,86 @@
 # Aelix Echo agent workflows for n8n
 
+[![CI](https://github.com/chinmay-aelix/aelix-agent-workflows/actions/workflows/ci.yml/badge.svg)](https://github.com/chinmay-aelix/aelix-agent-workflows/actions/workflows/ci.yml)
+![n8n 2.40.7](https://img.shields.io/badge/n8n-2.40.7-EA4B71)
+![Node 24+](https://img.shields.io/badge/node-%E2%89%A524-339933)
+![Guardrail tests: 44](https://img.shields.io/badge/guardrail%20tests-44-blue)
+
 Seven n8n workflows, one for each industry card on [aelixecho.com/ai-agents](https://aelixecho.com/ai-agents). Each one runs the loop the page describes: observe, plan, act, verify, hand off.
 
-| # | File | Industry | Work taken off the desk | Trigger |
+| # | Workflow | Industry | Work taken off the desk | Trigger |
 |---|---|---|---|---|
-| 1 | `workflows/01-fintech-refund-handler.json` | FinTech | Refund handling: eligibility check and refund | Webhook |
-| 2 | `workflows/02-healthcare-prior-auth-triage.json` | Healthcare | Prior-auth triage: packet assembly and routing | Webhook |
-| 3 | `workflows/03-manufacturing-invoice-exception.json` | Manufacturing | Invoice exceptions: match, draft, escalate | Webhook |
-| 4 | `workflows/04-logistics-shipment-exceptions.json` | Logistics | Shipment exceptions: trace, re-plan, escalate | Webhook |
-| 5 | `workflows/05-legaltech-contract-intake.json` | LegalTech | Contract intake: classify and route | Webhook |
-| 6 | `workflows/06-energy-outage-ticket-triage.json` | Energy & Utilities | Outage ticket triage: correlate and dispatch | Every 2 min |
-| 7 | `workflows/07-realestate-vendor-onboarding.json` | Real Estate & Construction | Vendor onboarding: document collection | Webhook |
-
-Built and tested against **n8n 2.40.7**. All seven import cleanly and pass n8n's own workflow validator.
+| 1 | [`01-fintech-refund-handler`](workflows/01-fintech-refund-handler.json) | FinTech | Refund handling: eligibility check and refund | Webhook |
+| 2 | [`02-healthcare-prior-auth-triage`](workflows/02-healthcare-prior-auth-triage.json) | Healthcare | Prior-auth triage: packet assembly and routing | Webhook |
+| 3 | [`03-manufacturing-invoice-exception`](workflows/03-manufacturing-invoice-exception.json) | Manufacturing | Invoice exceptions: match, draft, escalate | Webhook |
+| 4 | [`04-logistics-shipment-exceptions`](workflows/04-logistics-shipment-exceptions.json) | Logistics | Shipment exceptions: trace, re-plan, escalate | Webhook |
+| 5 | [`05-legaltech-contract-intake`](workflows/05-legaltech-contract-intake.json) | LegalTech | Contract intake: classify and route | Webhook |
+| 6 | [`06-energy-outage-ticket-triage`](workflows/06-energy-outage-ticket-triage.json) | Energy & Utilities | Outage ticket triage: correlate and dispatch | Every 2 min |
+| 7 | [`07-realestate-vendor-onboarding`](workflows/07-realestate-vendor-onboarding.json) | Real Estate & Construction | Vendor onboarding: document collection | Webhook |
 
 ## How every workflow is built
 
-Every canvas has the same six stages, each inside a colour-coded sticky note. An Overview and a Setup sticky sit on the left of each canvas.
-
+```mermaid
+flowchart LR
+    I["1 Intake"] --> P["2 Observe and plan<br/><i>agent, read-only</i>"]
+    P --> G["3 Guardrails<br/><i>plain code</i>"]
+    G --> A["4 Act and verify<br/><i>write, read back</i>"]
+    A --> AU["6 Audit"]
+    P -- "agent error" --> H["5 Hand off"]
+    G -- "guardrail stop" --> H
+    A -- "write or verify failed" --> H
+    H --> AU
 ```
-1 Intake ─▶ 2 Observe & plan ─▶ 3 Guardrails ─▶ 4 Act & verify ─▶ 6 Audit
-             (agent, read-only)   (plain code)    (write, read back)    ▲
-                  │                    │                 │               │
-                  └────────────────────┴─────────────────┴──▶ 5 Hand off ┘
-```
 
-- **The agent only reads.** Every tool attached to the AI Agent node is a GET (or a read-only quote). The agent returns a structured proposal validated against a JSON schema. It cannot change a system of record.
-- **Guardrails are deterministic.** A Code node re-reads the system of record where it matters (Stripe payment, ERP match view, OMS outage, TMS shipment) and checks the proposal against the limits in **Config**. The model's arithmetic is recomputed, not trusted.
-- **Writes are idempotent and verified.** Write calls carry an idempotency key. The record is read back, and the run counts as done only when the system shows the planned result.
-- **Every stop goes to one hand-off.** Agent errors, guardrail stops, failed writes and failed verification all land in the same place. It writes an `agent_exceptions` row with the reasons, the proposal, the agent's questions for a person, and every tool call and observation, then posts to Slack.
-- **Every run is audited** in `agent_runs`.
-- **Customers and vendors only get fixed templates.** Model-written text goes to reviewers, never straight to an outside party.
-- **Untrusted text is data.** Customer reasons, carrier notes, contract text and ticket descriptions are passed inside tags and labelled as data, not instructions.
+- **The agent only reads.** It returns a structured proposal validated against a JSON schema and cannot change a system of record.
+- **Guardrails are deterministic code.** They re-read the source of truth and recompute the model's arithmetic instead of trusting it.
+- **Writes are idempotent and verified** by reading the record back.
+- **Every stop goes to one hand-off**, with the reasons, the proposal and the full tool-call trace, so a person can decide quickly.
+- **Every run is audited**, and customers and vendors only ever receive fixed templates.
 
-Model: **Claude Opus 5** (`claude-opus-5`) with adaptive thinking. Effort is high everywhere except Energy, which uses medium for high-volume triage. Prompt caching is on (5 minutes). Change the model on each workflow's `… · Claude` node.
+More in [docs/architecture.md](docs/architecture.md), including what each workflow always leaves to a person.
 
-## What each one will not do
-
-| Workflow | Always goes to a person |
-|---|---|
-| Refund handler | Denials; refunds above the auto limit, outside the window, on disputed charges or with mismatched identity |
-| Prior-auth triage | Every payer submission; urgency disagreements; unknown PA requirement. It never decides medical necessity. |
-| Invoice exception | Quantity variances, anything outside tolerance, under-billing, duplicates. Vendor emails are drafts only. |
-| Shipment exceptions | Damage, customs, hazmat and address issues; paid re-plans over the cost limit or that still miss the promise |
-| Contract intake | Every approval, redline and signature; routing disagreements; counterparty mismatches; scanned PDFs |
-| Outage triage | Every crew dispatch; hazard reports (caught by a keyword screen before the model runs); critical customers |
-| Vendor onboarding | Every vendor approval; sanctions hits; license-holder mismatches |
-
-## Setting up
-
-1. **Database.** Run `sql/schema.sql` on a Postgres database. It creates `agent_runs`, `agent_exceptions` and `pa_worklist`.
-2. **Import.** In n8n: *Workflows → Import from file*, one file at a time. Or with the CLI: `n8n import:workflow --separate --input=workflows/`.
-3. **Credentials.** Open each workflow and connect the credentials its Setup sticky lists: Anthropic, Postgres, Slack, and Gmail where used. FinTech also needs Stripe and Salesforce OAuth2. The rest use Header Auth for your internal APIs.
-4. **Config.** Each workflow has a **Config** node with every tunable in one place: base URLs, limits, tolerances, the confidence floor and Slack channels.
-5. **Test.** Each Setup sticky has a `curl` line that posts the matching file from `samples/` to the test webhook URL.
-
-### Integrations you have to map
-
-FinTech calls the real Salesforce and Stripe APIs. The other six call a **thin gateway contract** (for example `GET /invoices/{id}/match` or `POST /shipments/{id}/rebook`), because every client's ERP, TMS, EHR, CLM or OMS is different. Each Setup sticky names the systems the contract usually maps to (SAP, Oracle, D365; OTM, Blue Yonder; Ironclad; Oracle NMS; and so on). Either stand that contract up in your integration layer, or edit the URLs on the tool and HTTP nodes.
-
-### Healthcare and PHI
-
-Only send PHI to Claude under a signed BAA with Anthropic, on a self-hosted n8n you control. Set execution-data pruning to match your retention policy. The workflow keeps PHI out of Slack; messages carry request ids only.
-
-## Changing the workflows
-
-The JSON files are generated from `scripts/`, so the seven stay consistent. You can edit the imported workflows in the n8n editor directly. To change the source instead:
+## Quick start
 
 ```bash
-npm install                       # pulls n8n 2.40.7 for validation (large)
-npm run build                     # scripts/workflows/*.mjs -> workflows/*.json
-npm test                          # 44 guardrail and verification scenarios, no network
-npm run validate                  # n8n's validator + sticky layout checks
+psql "$DATABASE_URL" -f sql/schema.sql                 # 1. audit and exception tables
+n8n import:workflow --separate --input=workflows/       # 2. import all seven
 ```
 
-- `scripts/lib.mjs`: shared builders (agent block, hand-off, audit, stickies)
-- `scripts/workflows/0N-*.mjs`: one file per workflow: prompts, tools, schema, guardrail code, sticky text
-- `scripts/test-guardrails.mjs`: runs the Guardrails, Verify, Safety screen and hand-off Code nodes from the built JSON against fixed scenarios
+Then connect credentials, edit each **Config** node, and post a file from `samples/` to the test webhook. Full steps in [docs/setup.md](docs/setup.md).
 
-## What has and hasn't been tested
+## Repository layout
 
-- **Tested:** all seven import into n8n 2.40.7 and render correctly on the canvas. Node parameters pass n8n's schema validator. Every Code node compiles. The guardrail, verification, safety-screen and hand-off logic passes 44 scenarios.
-- **Not tested:** live runs against Claude, Stripe, Salesforce or the gateway APIs, because no credentials were available. Run each workflow first with test-mode keys and staging endpoints, and read the first few `agent_exceptions` rows before raising any limits.
+```
+├── workflows/          Ready-to-import n8n workflows (generated, do not edit by hand)
+├── src/
+│   ├── lib.mjs         Shared builders: agent, guardrails, hand-off, audit, stickies
+│   └── workflows/      One source file per workflow: prompts, tools, schema, rules
+├── test/               Guardrail, verification and hand-off scenarios (44)
+├── scripts/            build.mjs (source to JSON) and validate.mjs (n8n validator)
+├── samples/            Example request payloads, one per workflow
+├── sql/                Postgres schema for runs, exceptions and the PA worklist
+├── docs/               Architecture and setup guides
+└── .github/            CI, Dependabot, PR template, code owners
+```
+
+## Quality checks
+
+Every push runs [CI](.github/workflows/ci.yml):
+
+| Check | What it proves |
+|---|---|
+| Build check | The committed JSON is exactly what the source generates |
+| Guardrail tests | 44 scenarios across all seven workflows, on Node 22 and 24, with no network or model |
+| n8n validation | Node parameters pass n8n's own schema validator; canvas layout and connections are sound |
+| Secret scan | No credentials anywhere in the git history |
+
+Run them locally with `npm run check`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
+
+## Status
+
+- **Tested:** all seven import into n8n 2.40.7 and pass its validator; every Code node compiles; the guardrail, verification, safety-screen and hand-off logic passes 44 scenarios.
+- **Not yet tested:** live runs against Claude, Stripe, Salesforce or the gateway APIs. Run each workflow first with test-mode keys and staging endpoints.
+
+## Security
+
+Credentials live in n8n, never in this repository. For PHI handling and how to report a vulnerability, see [SECURITY.md](SECURITY.md).

@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Generated from src/workflows/ by scripts/build.mjs. Collapsed in GitHub diffs; review the source instead.
+workflows/*.json linguist-generated=true
+package-lock.json linguist-generated=true
