@@ -6,7 +6,7 @@
   "description": "n8n workflows for the seven industry agents on aelixecho.com/ai-agents",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chinmay-aelix/aelix-agent-workflows.git"
+    "url": "git+https://github.com/Aelix-Echo/aelix-agent-workflows.git"
   },
   "engines": {
     "node": ">=24"
