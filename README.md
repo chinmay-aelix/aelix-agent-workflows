@@ -1,6 +1,6 @@
 # Aelix Echo agent workflows for n8n
 
-[![CI](https://github.com/chinmay-aelix/aelix-agent-workflows/actions/workflows/ci.yml/badge.svg)](https://github.com/chinmay-aelix/aelix-agent-workflows/actions/workflows/ci.yml)
+[![CI](https://github.com/Aelix-Echo/aelix-agent-workflows/actions/workflows/ci.yml/badge.svg)](https://github.com/Aelix-Echo/aelix-agent-workflows/actions/workflows/ci.yml)
 ![n8n 2.40.7](https://img.shields.io/badge/n8n-2.40.7-EA4B71)
 ![Node 24+](https://img.shields.io/badge/node-%E2%89%A524-339933)
 ![Guardrail tests: 44](https://img.shields.io/badge/guardrail%20tests-44-blue)
